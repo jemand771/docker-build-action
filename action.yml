@@ -38,7 +38,8 @@ runs:
           type=ref,event=pr,prefix=pr-
           type=ref,event=branch,prefix=br-
           type=ref,event=tag,prefix=tag-
-          type=sha,prefix=sha-,fromat=long
+          type=sha,prefix=sha-
+          type=sha,prefix=sha-,format=long
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
