@@ -12,6 +12,19 @@ inputs:
     description: List of target platforms for docker buildx
     required: false
     default: linux/amd64,linux/arm64,linux/arm/v7
+  images:
+    description: List of names to tag the image with
+    required: false
+    default: |
+      ghcr.io/${{ github.repository }}
+  context:
+    description: Context for buildx to use
+    required: false
+    default: .
+  file:
+    description: Path of the Dockerfile to use
+    required: false
+    default: ${{ inputs.context }}/Dockerfile
 runs:
   using: composite
   steps:
@@ -26,8 +39,7 @@ runs:
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: |
-          ghcr.io/${{ github.repository }}
+        images: ${{ inputs.images }}
         flavor: |
           latest=auto
         # TODO these probably need some fine-tuning
@@ -64,7 +76,8 @@ runs:
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: §{{ inputs.context }}
+        file: §{{ inputs.file }}
         platforms: ${{ inputs.platforms }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
