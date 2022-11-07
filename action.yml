@@ -95,7 +95,7 @@ runs:
     - name: Export images
       if: ${{ inputs.artifact }}
       shell: bash
-      run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar; done"
+      run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar"; done
     - name: Upload images
       if: ${{ inputs.artifact }}
       uses: actions/upload-artifact@v3
