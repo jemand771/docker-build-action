@@ -28,6 +28,10 @@ inputs:
     description: Whether to push the built image
     required: false
     default: "true"
+  artifact:
+    description: Whether to upload the built image as an artifact
+    required: false
+    default: "true"
 runs:
   using: composite
   steps:
@@ -83,10 +87,21 @@ runs:
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
         platforms: ${{ inputs.platforms }}
         push: ${{ inputs.push }}
+        load: ${{ inputs.artifact }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+    - name: Export images
+      if: ${{ inputs.artifact }}
+      shell: bash
+      run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar; done"
+    - name: Upload images
+      if: ${{ inputs.artifact }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-images
+        path: *.tar
       # TODO remove me. prevent the cache from growing infinitely
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
