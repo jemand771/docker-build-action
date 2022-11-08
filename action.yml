@@ -96,12 +96,22 @@ runs:
       if: ${{ inputs.artifact }}
       shell: bash
       run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar"; done
+    - name: Store image list
+      if: ${{ inputs.artifact }}
+      shell: bash
+      run: echo "${{ inputs.images }}" > docker-images.txt
     - name: Upload images
       if: ${{ inputs.artifact }}
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
         path: "*.tar"
+    - name: Upload list
+      if: ${{ inputs.artifact }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-images
+        path: docker-images.txt
       # TODO remove me. prevent the cache from growing infinitely
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
