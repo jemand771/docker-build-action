@@ -99,7 +99,7 @@ runs:
     - name: Store image list
       if: ${{ inputs.artifact }}
       shell: bash
-      run: echo "${{ inputs.images }}" > docker-images.txt
+      run: echo "${{ steps.meta.outputs.tags }}" > docker-images.txt
     - name: Upload images
       if: ${{ inputs.artifact }}
       uses: actions/upload-artifact@v3
