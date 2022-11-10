@@ -37,7 +37,7 @@ runs:
   steps:
     - name: Turnstyle
       uses: softprops/turnstyle@v1
-      if: ${{ inputs.use-turnstyle }}
+      if: ${{ fromJSON(inputs.use-turnstyle) }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
     - name: Checkout
@@ -93,21 +93,21 @@ runs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
     - name: Export images
-      if: ${{ inputs.artifact }}
+      if: ${{ fromJSON(inputs.artifact) }}
       shell: bash
       run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar"; done
     - name: Store image list
-      if: ${{ inputs.artifact }}
+      if: ${{ fromJSON(inputs.artifact) }}
       shell: bash
       run: echo "${{ steps.meta.outputs.tags }}" > docker-images.txt
     - name: Upload images
-      if: ${{ inputs.artifact }}
+      if: ${{ fromJSON(inputs.artifact) }}
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
         path: "*.tar"
     - name: Upload list
-      if: ${{ inputs.artifact }}
+      if: ${{ fromJSON(inputs.artifact) }}
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
