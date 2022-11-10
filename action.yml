@@ -86,8 +86,8 @@ runs:
         context: ${{ inputs.context }}
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
         platforms: ${{ inputs.platforms }}
-        push: ${{ inputs.push }}
-        load: ${{ inputs.artifact }}
+        push: ${{ fromJSON(inputs.push) }}
+        load: ${{ fromJSON(inputs.artifact) }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
