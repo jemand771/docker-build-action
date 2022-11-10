@@ -67,6 +67,7 @@ runs:
       with:
         install: true
     - name: Login to GitHub Container Registry
+      if: ${{ fromJSON(inputs.push) }}
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
