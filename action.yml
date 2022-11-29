@@ -24,14 +24,10 @@ inputs:
   file:
     description: Path of the Dockerfile to use
     required: false
-  push:
-    description: Whether to push the built image
+  push_strategy:
+    description: How to publish images. Can be one of none, push, artifact
     required: false
-    default: "true"
-  artifact:
-    description: Whether to upload the built image as an artifact
-    required: false
-    default: "true"
+    default: push
 runs:
   using: composite
   steps:
@@ -67,7 +63,7 @@ runs:
       with:
         install: true
     - name: Login to GitHub Container Registry
-      if: ${{ fromJSON(inputs.push) }}
+      if: ${{ inputs.push_strategy == 'push' }}
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
@@ -87,28 +83,28 @@ runs:
         context: ${{ inputs.context }}
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
         platforms: ${{ inputs.platforms }}
-        push: ${{ fromJSON(inputs.push) }}
-        load: ${{ fromJSON(inputs.artifact) }}
+        push: ${{ inputs.push_strategy == 'push' }}
+        load: ${{ inputs.push_strategy == 'artifact' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
     - name: Export images
-      if: ${{ fromJSON(inputs.artifact) }}
+      if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
       run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar"; done
     - name: Store image list
-      if: ${{ fromJSON(inputs.artifact) }}
+      if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
       run: echo "${{ steps.meta.outputs.tags }}" > docker-images.txt
     - name: Upload images
-      if: ${{ fromJSON(inputs.artifact) }}
+      if: ${{ inputs.push_strategy == 'artifact' }}
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
         path: "*.tar"
     - name: Upload list
-      if: ${{ fromJSON(inputs.artifact) }}
+      if: ${{ inputs.push_strategy == 'artifact' }}
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
