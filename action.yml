@@ -28,6 +28,10 @@ inputs:
     description: How to publish images. Can be one of none, push, artifact
     required: false
     default: push
+  args:
+    description: arguments to pass to docker build (ARG in dockerfile)
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -91,6 +95,7 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        build-args: ${{ inputs.args }}
     - name: Export images
       if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
