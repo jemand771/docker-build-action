@@ -77,13 +77,13 @@ runs:
         flavor: |
           latest=auto
         tags: |
-          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}.{{patch}}' || '' '}}
-          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}' || '' '}}
-          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}' || '' '}}
-          ${{ fromJSON(inputs.tag-pr) && 'type=ref,event=pr,prefix=pr-' || '' '}}
-          ${{ fromJSON(inputs.tag-branch) && 'type=ref,event=branch,prefix=br-' || '' '}}
-          ${{ fromJSON(inputs.tag-sha-short) && 'type=sha,prefix=sha-' || '' '}}
-          ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' '}}
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}.{{patch}}' || '' }}
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}' || '' }}
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}' || '' }}
+          ${{ fromJSON(inputs.tag-pr) && 'type=ref,event=pr,prefix=pr-' || '' }}
+          ${{ fromJSON(inputs.tag-branch) && 'type=ref,event=branch,prefix=br-' || '' }}
+          ${{ fromJSON(inputs.tag-sha-short) && 'type=sha,prefix=sha-' || '' }}
+          ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' }}
           ${{ inputs.extra-rules }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
