@@ -32,6 +32,30 @@ inputs:
     description: arguments to pass to docker build (ARG in dockerfile)
     required: false
     default: ""
+  tag-semver:
+    description: whether to tag using semver, i.e. v1.2.3 turns into :1, :1.2, and :1.2.3
+    required: false
+    default: "true"
+  tag-branch:
+    description: whether to tag pushes to any branch as pr-<branch>
+    required: false
+    default: "true"
+  tag-pr:
+    description: whether to tag all PRs as pr-<number>
+    required: false
+    default: "true"
+  tag-sha-short:
+    description: whether to tag all commits as sha-<short hash>
+    required: false
+    default: "false"
+  tag-sha-long:
+    description: whether to tag all commits as sha-<hash>
+    required: false
+    default: "false"
+  extra-tag-rules:
+    description: extra rules to pass to docker/metadata-action
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -49,18 +73,18 @@ runs:
       uses: docker/metadata-action@v3
       with:
         images: ${{ inputs.images }}
+        # TODO handle latest tag?
         flavor: |
           latest=auto
-        # TODO these probably need some fine-tuning
         tags: |
-          type=semver,pattern={{major}}.{{minor}}.{{patch}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
-          type=ref,event=pr,prefix=pr-
-          type=ref,event=branch,prefix=br-
-          type=ref,event=tag,prefix=tag-
-          type=sha,prefix=sha-
-          type=sha,prefix=sha-,format=long
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}.{{patch}}' || '' '}}
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}' || '' '}}
+          ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}' || '' '}}
+          ${{ fromJSON(inputs.tag-pr) && 'type=ref,event=pr,prefix=pr-' || '' '}}
+          ${{ fromJSON(inputs.tag-branch) && 'type=ref,event=branch,prefix=br-' || '' '}}
+          ${{ fromJSON(inputs.tag-sha-short) && 'type=sha,prefix=sha-' || '' '}}
+          ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' '}}
+          ${{ inputs.extra-rules }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
