@@ -114,11 +114,12 @@ runs:
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
         platforms: ${{ inputs.platforms }}
         push: ${{ inputs.push_strategy == 'push' }}
-        load: ${{ inputs.push_strategy == 'artifact' }}
+        load: false
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        outputs: ${{ inputs.push_strategy == 'artifact' && 'type=oci,dest=image.tar' || 'type=image' }}
         build-args: ${{ inputs.args }}
     - name: Export images
       if: ${{ inputs.push_strategy == 'artifact' }}
@@ -133,7 +134,7 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: docker-images
-        path: "*.tar"
+        path: "image.tar"
     - name: Upload list
       if: ${{ inputs.push_strategy == 'artifact' }}
       uses: actions/upload-artifact@v3
