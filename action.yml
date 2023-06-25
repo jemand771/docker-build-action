@@ -121,10 +121,6 @@ runs:
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
         outputs: ${{ inputs.push_strategy == 'artifact' && 'type=oci,dest=image.tar' || 'type=image' }}
         build-args: ${{ inputs.args }}
-    - name: Export images
-      if: ${{ inputs.push_strategy == 'artifact' }}
-      shell: bash
-      run: for image in "${{ inputs.images }}"; do docker save $image > "$(echo $image | sed -e 's/[^A-Za-z0-9._-]/_/g').tar"; done
     - name: Store image list
       if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
