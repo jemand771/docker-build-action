@@ -99,14 +99,6 @@ runs:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ inputs.GITHUB_TOKEN }}
-    - name: Set up docker cache
-      uses: actions/cache@v2
-      with:
-        path: /tmp/.buildx-cache
-        key: buildx-${{ runner.os }}-${{ github.sha }}
-        restore-keys: |
-          buildx-${{ runner.os }}-
-          buildx-
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
@@ -117,8 +109,8 @@ runs:
         load: false
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
         outputs: ${{ inputs.push_strategy == 'artifact' && 'type=oci,dest=image.tar' || 'type=image' }}
         build-args: ${{ inputs.args }}
     - name: Store image list
@@ -137,11 +129,3 @@ runs:
       with:
         name: docker-images
         path: docker-images.txt
-      # TODO remove me. prevent the cache from growing infinitely
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache
-      shell: bash
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
