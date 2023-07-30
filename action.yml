@@ -2,8 +2,8 @@ name: "docker-build"
 description: "Build docker image"
 inputs:
   GITHUB_TOKEN:
-    description: Token for accessing GHCR. Set to secrets.GITHUB_TOKEN
-    required: true
+    description: Token for accessing GHCR. Set to secrets. Set to GITHUB_TOKEN. Omit to disable docker login.
+    required: false
   platforms:
     description: List of target platforms for docker buildx
     required: false
@@ -61,12 +61,11 @@ runs:
         submodules: recursive
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: ${{ inputs.images }}
-        # TODO handle latest tag?
         flavor: |
-          latest=auto
+          latest=false
         tags: |
           ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}.{{patch}}' || '' }}
           ${{ fromJSON(inputs.tag-semver) && 'type=semver,pattern={{major}}.{{minor}}' || '' }}
@@ -77,21 +76,21 @@ runs:
           ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' }}
           ${{ inputs.extra-tag-rules }}
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: Set up Docker Buildx
       id: buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
       with:
         install: true
     - name: Login to GitHub Container Registry
-      if: ${{ inputs.push_strategy == 'push' }}
-      uses: docker/login-action@v1
+      if: ${{ inputs.GITHUB_TOKEN != '' && inputs.push_strategy == 'push' }}
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ inputs.GITHUB_TOKEN }}
     - name: Build and push
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v4
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
