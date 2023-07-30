@@ -1,12 +1,8 @@
 name: "docker-build"
 description: "Build docker image"
 inputs:
-  use-turnstyle:
-    description: Prevent parallel builds
-    required: false
-    default: "true"
   GITHUB_TOKEN:
-    description: Token for accessing GHCR and turnstyle. Set to secrets.GITHUB_TOKEN
+    description: Token for accessing GHCR. Set to secrets.GITHUB_TOKEN
     required: true
   platforms:
     description: List of target platforms for docker buildx
@@ -59,11 +55,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Turnstyle
-      uses: softprops/turnstyle@v1
-      if: ${{ fromJSON(inputs.use-turnstyle) }}
-      env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
     - name: Checkout
       uses: actions/checkout@v3
       with:
