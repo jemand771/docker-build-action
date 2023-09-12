@@ -90,7 +90,7 @@ runs:
         username: ${{ github.repository_owner }}
         password: ${{ inputs.GITHUB_TOKEN }}
     - name: Build and push
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
