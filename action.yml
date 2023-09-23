@@ -56,12 +56,12 @@ runs:
   using: composite
   steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@v4
+      uses: docker/metadata-action@v5
       with:
         images: ${{ inputs.images }}
         flavor: |
@@ -76,7 +76,7 @@ runs:
           ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' }}
           ${{ inputs.extra-tag-rules }}
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v3
@@ -90,7 +90,7 @@ runs:
         username: ${{ github.repository_owner }}
         password: ${{ inputs.GITHUB_TOKEN }}
     - name: Build and push
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: ${{ inputs.context }}
         file: ${{ inputs.file == '' && format('{0}/Dockerfile', inputs.context) || inputs.file }}
