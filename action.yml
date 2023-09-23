@@ -84,7 +84,7 @@ runs:
         install: true
     - name: Login to GitHub Container Registry
       if: ${{ inputs.GITHUB_TOKEN != '' && inputs.push_strategy == 'push' }}
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
