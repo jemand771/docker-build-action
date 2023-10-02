@@ -56,6 +56,10 @@ inputs:
     description: extra rules to pass to docker/metadata-action
     required: false
     default: ""
+  disable-cache:
+    description: disable buildx docker cache
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
@@ -108,6 +112,7 @@ runs:
         cache-to: type=gha,mode=max
         outputs: ${{ inputs.push_strategy == 'artifact' && 'type=oci,dest=image.tar' || 'type=image' }}
         build-args: ${{ inputs.args }}
+        no-cache: ${{ fromJSON(inputs.disable-cache) }}
     - name: Store image list
       if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
