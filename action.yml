@@ -82,7 +82,7 @@ runs:
           ${{ fromJSON(inputs.tag-branch) && 'type=ref,event=branch,prefix=br-' || '' }}
           ${{ fromJSON(inputs.tag-sha-short) && 'type=sha,prefix=sha-' || '' }}
           ${{ fromJSON(inputs.tag-sha-long) && 'type=sha,prefix=sha-,format=long' || '' }}
-          ${{ fromJSON(inputs.tag-datetime) && 'type=raw,prefix=dt-,value={{ date ''YYYY-MM-DDTHH-mm-ss'' }}' || '' }}
+          ${{ fromJSON(inputs.tag-datetime) && 'type=raw,prefix=dt-,value={{ date ''YYYY-MM-DDTHH-mm-ssZ'' }}' || '' }}
           ${{ inputs.extra-tag-rules }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
