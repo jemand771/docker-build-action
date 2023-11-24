@@ -64,6 +64,10 @@ inputs:
     description: disable buildx docker cache
     required: false
     default: "false"
+  target:
+    description: target stage to build
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -118,6 +122,7 @@ runs:
         outputs: ${{ inputs.push_strategy == 'artifact' && 'type=oci,dest=image.tar' || 'type=image' }}
         build-args: ${{ inputs.args }}
         no-cache: ${{ fromJSON(inputs.disable-cache) }}
+        target: ${{ inputs.target }}
     - name: Store image list
       if: ${{ inputs.push_strategy == 'artifact' }}
       shell: bash
