@@ -132,10 +132,6 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: docker-images
-        path: "image.tar"
-    - name: Upload list
-      if: ${{ inputs.push_strategy == 'artifact' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: docker-images
-        path: docker-images.txt
+        path: |
+          image.tar
+          docker-images.txt
