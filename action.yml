@@ -129,7 +129,7 @@ runs:
       run: echo "${{ steps.meta.outputs.tags }}" > docker-images.txt
     - name: Upload images
       if: ${{ inputs.push_strategy == 'artifact' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: docker-images
         path: |
