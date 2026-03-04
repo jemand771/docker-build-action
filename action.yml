@@ -94,7 +94,7 @@ runs:
           ${{ fromJSON(inputs.tag-date) && 'type=raw,prefix=d-,value={{ date ''YYYY-MM-DD'' }}' || '' }}
           ${{ inputs.extra-tag-rules }}
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
+      uses: docker/setup-qemu-action@v4
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v3
